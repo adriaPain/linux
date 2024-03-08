@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Informations générales sur le système
+echo "Nom de l'ordinateur : $(hostname)"
+echo "Système d'exploitation : $(uname -s)"
+echo "Version du noyau : $(uname -r)"
+echo "Architecture du processeur : $(uname -m)"
+echo "Fabricant : $(sudo dmidecode -s system-manufacturer)"
+echo "Modèle : $(sudo dmidecode -s system-product-name)"
+
+# Informations sur le processeur
+echo "Processeur : $(grep 'model name' /proc/cpuinfo | awk -F ': ' '{print $2}' | uniq)"
+echo "Nombre de cœurs de processeur : $(grep 'cpu cores' /proc/cpuinfo | awk -F ': ' '{print $2}' | uniq)"
+echo "Nombre total de processeurs : $(grep 'processor' /proc/cpuinfo | wc -l)"
+
+# Informations sur la mémoire
+echo "Mémoire totale : $(free -h | awk '/Mem/{print $2}')"
+
+# Informations sur le disque dur
+echo "Espace disque total : $(df -h --total | awk '/total/{print $2}')"
+
+# Informations sur les utilisateurs
+echo "Utilisateurs du système :"
+getent passwd | cut -d: -f1
+
+# Informations sur les logiciels installés
+echo "Logiciels installés :"
+dpkg -l | grep '^ii' | awk '{print $2}'
+
+# Informations sur les mises à jour (pour les systèmes basés sur Debian)
+echo "Mises à jour installées :"
+apt list --installed | wc -l
+
+# Récupération des journaux d'événements
+echo "Journaux d'événements récents :"
+journalctl -n 10 --no-pager
